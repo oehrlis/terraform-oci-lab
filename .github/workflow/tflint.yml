@@ -1,0 +1,42 @@
+# ----------------------------------------------------------------------------
+# Trivadis AG, Infrastructure Managed Services
+# Saegereistrasse 29, 8152 Glattbrugg, Switzerland
+# ----------------------------------------------------------------------------
+# Name.......: tflint.yml 
+# Author.....: Stefan Oehrli (oes) stefan.oehrli@trivadis.com
+# Editor.....: Stefan Oehrli
+# Date.......: 2021.03.05
+# Revision...: 
+# Purpose....: workflow to check the terraform configuration
+# Notes......: --
+# Reference..: 
+# ----------------------------------------------------------------------------
+name: Terraform Lint
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # - Check Markdown -----------------------------------------------------------
+  # job to check the documentation
+  check_tf_conf:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@main
+    - name: Lint Terraform
+      uses: actionshub/terraform-lint@main
+# --- EOF -------------------------------------------------------------------
