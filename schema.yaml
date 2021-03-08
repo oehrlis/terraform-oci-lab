@@ -52,6 +52,13 @@ variableGroups:
 #   - vcn_cidr
 #   - dns_label
 
+variables:
+  compartment_ocid:
+    type: oci:identity:compartment:id
+    required: true
+    title: "Compartment"
+    description: "The compartment in which to create compute instance(s) and ATP."
+    
 # variables:
 #   load_balancer_min_band:
 #     type: enum
