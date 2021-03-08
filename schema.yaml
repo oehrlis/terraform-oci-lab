@@ -15,8 +15,8 @@
 # ---------------------------------------------------------------------------
 title: "Basic Lab Environment"
 description: "Basic Lab Environment using Oracle Cloud Infrastructure"
-schemaVersion: 0.0.1
-version: "20210305"
+schemaVersion: 1.1.0
+version: "20190304"
 locale: "en"
 
 variableGroups:
@@ -58,7 +58,7 @@ variables:
     required: true
     title: "Compartment"
     description: "The compartment in which to create compute instance(s) and ATP."
-    
+
 # variables:
 #   load_balancer_min_band:
 #     type: enum
