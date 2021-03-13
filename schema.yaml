@@ -21,14 +21,11 @@ locale: "en"
 
 variableGroups:
   - title: "General Configuration"
-    description: "Number of environments to create"
     variables:
-      - compartment_id
       - region
-  - title: "LAB Configuration"
-    description: "Number of environments to create"
-    variables:
       - compartment_id
+  - title: "LAB Configuration"
+    variables:
       - tvd_participants
   # - title: "Hidden"
   #   variables:
@@ -38,6 +35,8 @@ variableGroups:
 variables:
   # compartmentId dynamic dropdown, targetCompartment present in input variables
   compartment_id:
+    title: "Base Compartment"
+    description: "Base Compartment to create the resources"
     required: true
     type: oci:identity:compartment:id      
   
@@ -46,29 +45,24 @@ variables:
     type: oci:identity:region:name
 
   tvd_participants:
-    title: "Number of Participants"
-    description: "Number of environments to create"
+    title: "Participants"
+    description: "Number of participants or environments to be created."
     type: integer
     required: false
     default: 1
 
+ 
+outputGroups:
+  - title: "Network Information"
+    outputs:
+      - vcn_id
 
-
-
-
-# outputGroups:
-#   - title: ${Messages.solutionsHub.solutions.ociDevTools.outputGroups.title()}
-#     outputs:
-#       - compute_instance_public_ip
-#       - compartment_id
-#       - generated_instance_ssh_private_key
-
-# outputs:
-#   compute_instance_public_ip:
-#     title: ${Messages.solutionsHub.solutions.ociDevTools.outputs.compute_instance_public_ip.title()}
-#     displayText: ${Messages.solutionsHub.solutions.ociDevTools.outputs.compute_instance_public_ip.displayText()}
-#     type: copyableString
-#     visible: true   
+outputs:
+  vcn_id:
+    title: "VCN IDs"
+    displayText: "VCN Text"
+    type: ocid
+    visible: true   
 
 
 # variableGroups:
