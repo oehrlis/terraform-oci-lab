@@ -21,28 +21,39 @@ locale: "en"
 
 variableGroups:
   - title: "General Configuration"
+    description: "Number of environments to create"
+    variables:
+      - compartment_id
+      - region
+  - title: "LAB Configuration"
+    description: "Number of environments to create"
     variables:
       - compartment_id
       - tvd_participants
-  - title: "Hidden"
-    variables:
-      - ${region}
+  # - title: "Hidden"
+  #   variables:
+  #     - 
 
 
 variables:
   # compartmentId dynamic dropdown, targetCompartment present in input variables
   compartment_id:
+    required: true
     type: oci:identity:compartment:id      
+  
+  region:
+    required: true
+    type: oci:identity:region:name
 
   tvd_participants:
     title: "Number of Participants"
     description: "Number of environments to create"
     type: integer
+    required: false
     default: 1
 
-  region:
-    type: oci:identity:region:name
-    visible: false
+
+
 
 
 # outputGroups:
