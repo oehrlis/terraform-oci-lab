@@ -25,7 +25,7 @@ module "tvdlab-vcn" {
   # # Lab Configuration
   # resource_name    = local.resource_name
   # tvd_domain       = var.tvd_domain
-  # tvd_participants = var.tvd_participants
+  tvd_participants = var.tvd_participants
 
   # # general oci parameters
   # label_prefix = var.label_prefix

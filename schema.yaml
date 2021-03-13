@@ -34,17 +34,17 @@ variableGroups:
 #   - load_balancer_min_band
 #   - load_balancer_max_band
 
-# - title: "Select Compute Shape"
-#   variables:
-#   - instance_shape
+- title: "Select Compute Shape"
+  variables:
+  - instance_shape
 
-# - title: "Select Availability Domain"
-#   variables:
-#   - AD
+- title: "Select Availability Domain"
+  variables:
+  - AD
 
-# - title: "SSH Key Configuration"
-#   variables:
-#   - ssh_public_key
+- title: "SSH Key Configuration"
+  variables:
+  - ssh_public_key
 
 # - title: "Virtual Cloud Network Configuration"
 #   variables:
@@ -53,13 +53,35 @@ variableGroups:
 #   - dns_label
 
 variables:
+  # compartment_ocid:
+  #   type: oci:identity:compartment:id
+  #   required: true
+  #   title: "Compartment"
+  #   description: "The compartment in which to create compute instance(s) and ATP."
+
+  # General Configuration
+  tenancy_ocid:
+    title: Tenancy ID
+    description: The Oracle Cloud Identifier (OCID) for your tenancy
+    type: string
+    required: true
+    visible: false
+
+  region:
+    title: ${Messages.solutionsHub.genericVariables.region.title()}
+    description: ${Messages.solutionsHub.genericVariables.region.description()}
+    type: oci:identity:region:name
+    required: true
+    visible: false
+
   compartment_ocid:
+    title: ${Messages.solutionsHub.genericVariables.compartment.title()}
+    description: ${Messages.solutionsHub.genericVariables.compartment.description()}
     type: oci:identity:compartment:id
     required: true
-    title: "Compartment"
-    description: "The compartment in which to create compute instance(s) and ATP."
+    visibile: false
 
-# variables:
+variables:
 #   load_balancer_min_band:
 #     type: enum
 #     enum:
@@ -92,31 +114,31 @@ variables:
 #     type: string
 #     title: "Enter your VCN CIDR Block. Examle: 10.0.0/16"
 
-#   instance_shape:
-#     type: enum
-#     enum:
-#       - "VM.Standard.E2.1.Micro"
-#       - "VM.Standard2.1"
-#       - "VM.Standard2.2"
-#       - "VM.Standard.E2.1"
-#     title: "Select a shape for the compute instances"
-#     description: "A shape is a template that determines the number of CPUs, amount of memory, and other resources allocated to a newly created instance."
+  instance_shape:
+    type: enum
+    enum:
+      - "VM.Standard.E2.1.Micro"
+      - "VM.Standard2.1"
+      - "VM.Standard2.2"
+      - "VM.Standard.E2.1"
+    title: "Select a shape for the compute instances"
+    description: "A shape is a template that determines the number of CPUs, amount of memory, and other resources allocated to a newly created instance."
 
-#   AD:
-#     type: enum
-#     enum:
-#       - "1"
-#       - "2"
-#       - "3"
-#     title: "Select the Availability Domain"
-#     description: "The Availability Domain is where your instance will be placed"
+  # AD:
+  #   type: enum
+  #   enum:
+  #     - "1"
+  #     - "2"
+  #     - "3"
+  #   title: "Select the Availability Domain"
+  #   description: "The Availability Domain is where your instance will be placed"
   
-#   ssh_public_key:
-#     type: oci:core:ssh:publickey
-#     title: "SSH Public Key"
-#     description: "The public SSH key for the key-pair that you want to use, if you wish to login to the instances over SSH."
-#     additionalProps:
-#       allowMultiple: true
-#     pattern: "((^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)(,((ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)*$"
+  ssh_public_key:
+    type: oci:core:ssh:publickey
+    title: "SSH Public Key"
+    description: "The public SSH key for the key-pair that you want to use, if you wish to login to the instances over SSH."
+    additionalProps:
+      allowMultiple: true
+    pattern: "((^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)(,((ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)*$"
 
 # --- EOF -------------------------------------------------------------------
