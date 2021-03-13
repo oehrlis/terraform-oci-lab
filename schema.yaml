@@ -13,77 +13,450 @@
 # License....: Apache License Version 2.0, January 2004 as shown
 #              at http://www.apache.org/licenses/
 # ---------------------------------------------------------------------------
-title: "Basic Lab Environment"
-description: "Basic Lab Environment using Oracle Cloud Infrastructure"
+
+# Title shown in Application Information tab.
+title: Sample input variable schema
+# Sub Title shown in Application Information tab.
+description: Sample description...
+informationalText: Sample informational text to display in tab...
 schemaVersion: 1.1.0
 version: "20190304"
+
+# URL of Logo Icon used on Application Information tab. Logo must be 130x130 pixels.
+# (Optional)
+logoUrl: https://cloudmarketplace.oracle.com/marketplace/content?contentId=53066708
+
+# Used in Application Information tab to Hyperlink Title and Logo to the Marketplace
+# Listing.
+# Also used to link to Listing Usage section for "View Instructions".
+# (Optional) If it is missing, Application Information uses the
+# "marketplace-listing-id" tag for the same purpose.
+source:
+  type: marketplace
+  reference: 16132843
+
 locale: "en"
-
 variableGroups:
-  - title: "General Configuration"
+  - title: "Node Configuration"
     variables:
-      - region
-      - compartment_id
-      - myAvailabilityDomain
-  - title: "LAB Configuration"
+      - targetCompartment
+      - ${nodeCount}
+      - ${nodeShapes}
+      - ${availability}
+  - title: "Application Details"
     variables:
-      - tvd_participants
-
-  - title: "SSH Key Configuration"
+      - ${username}
+      - ${password}
+      - ${dnsServers}
+  - title: "Subnet"
     variables:
-      - ssh_public_key
-
-  # - title: "Hidden"
-  #   variables:
-  #     - 
-
+      - ${vcnCompartment}
+      - ${myVcn}
+      - ${subnetCompartment}
+      - ${mySubnet}
+      - ${mySubnetWithFilter}
+      - ${hide_public_subnet}
+      - ${hide_private_subnet}
+      - ${hide_regional_subnet}
+      - ${hide_ad_subnet}
+  - title: "Database"
+    variables:
+      - ${dbCompartment}
+      - ${myDbSystem}
+      - ${myDbHome}
+      - ${myDb}
+      - ${myAutonomousDB}
+  - title: "Advanced"
+    variables:
+      - ${myImageId}
+      - ${myShape}
+      - ${myCompatibleShape}
+    visible: true
+  - title: "Hidden"
+    variables:
+      - ${myRegion}
+    visible: false
+  - title: "Existing Vcn"
+    variables:
+      - ${myVcn}
+    visible:
+      or:
+        - ${useExistingVcn}
+        - and:
+          - and:
+            - true
+            - true
+          - not:
+            - false
+  - title: "Password can't be 'password'!"
+    variables:
+      - ${password}
+  - title: "Complex Conditional Section"
+    variables:
+      - ${myVcn}
+    visible:
+      or:
+        - ${useExistingVcn}
+        - and:
+          - and:
+            - true
+            - true
+          - not:
+            - false
+  - title: "Equality Conditional Section"
+    variables:
+      - ${myVcn}
+    visible:
+      eq:
+        - ${objectStorageTier}
+        - standard
 
 variables:
-  # compartmentId dynamic dropdown, targetCompartment present in input variables
-  compartment_id:
-    title: "Base Compartment"
-    description: "Base Compartment to create the resources"
+  # string field
+  username:
+    type: string
+    minLength: 1
+    maxLength: 255
+    pattern: "^[a-z][a-zA-Z0-9]+$"
+    # title is used as the label if present
+    title: Username
+    # description used as the tooltip if present
+    description: Enter your username
+    default: admin
     required: true
-    type: oci:identity:compartment:id      
-  
-  region:
-    required: true
-    type: oci:identity:region:name
 
-  tvd_participants:
-    title: "Participants"
-    description: "Number of participants or environments to be created."
+  # password field
+  password:
+    description: Really Bad Password Field
+    type: password
+    pattern: "^[a-zA-z]{1,8}$"
+    required: true
+
+  # integer field
+  nodeCount:
     type: integer
-    required: false
-    default: 1
+    description: Number of Nodes
+    minimum: 3
+    maximum: 12
+    multipleOf: 3
 
-  ssh_public_key:
-    type: oci:core:ssh:publickey
-    title: "SSH Public Key"
-    description: "The public SSH key for the key-pair that you want to use, if you wish to login to the instances over SSH."
-    additionalProps:
-      allowMultiple: true
-    pattern: "((^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)(,((ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)*$"
+  # non-integer number field
+  availability:
+    type: number
+    default: 99.7
+    maximum: 100
+    minimum: 0
 
-myAvailabilityDomain:
+  # string enum
+  objectStorageTier:
+    type: enum
+    enum:
+    - archive
+    - standard
+
+  # input a list, each element must be an ip addresses
+  dnsServers:
+    type: array
+    items:
+      type: string
+      pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+    minItems: 1
+    uniqueItems: true
+    default: [ 8.8.8.8, 8.8.4.4 ]
+
+  # datetime picker
+  expireDate:
+    type: datetime
+
+  # compartmentId dynamic dropdown, targetCompartment present in input variables
+  targetCompartment:
+    type: oci:identity:compartment:id
+
+
+  # ---- subnet picker ---- #
+
+  useExistingVcn:
+    type: boolean
+
+  vcnCompartment:
+    type: oci:identity:compartment:id
+    visible: ${useExistingVcn}
+
+  myVcn:
+    type: oci:core:vcn:id
+    dependsOn:
+      compartmentId: ${vcnCompartment}
+    visible:
+      or:
+        - ${useExistingVcn}
+        - and:
+          - and:
+            - true
+            - true
+          - not:
+            - false
+
+  subnetCompartment:
+    type: oci:identity:compartment:id
+    visible: ${useExistingVcn}
+
+  mySubnet:
+    type: oci:core:subnet:id
+    dependsOn:
+      compartmentId: ${subnetCompartment}
+      vcnId: ${myVcn}
+    visible: ${useExistingVcn}
+
+  mySubnetWithFilter:
+    type: oci:core:subnet:id
+    dependsOn:
+      compartmentId: ${subnetCompartment}
+      vcnId: ${myVcn}
+      hidePublicSubnet: ${hide_public_subnet}
+      hidePrivateSubnet: ${hide_private_subnet}
+      hideRegionalSubnet: ${hide_regional_subnet}
+      hideAdSubnet: ${hide_ad_subnet}
+    visible: ${useExistingVcn}
+
+  hide_public_subnet:
+    type: boolean
+    default: false
+
+  hide_private_subnet:
+    type: boolean
+    default: false
+
+  hide_regional_subnet:
+    type: boolean
+    default: false
+
+  hide_ad_subnet:
+    type: boolean
+    default: false
+
+  myRegion:
+    type: oci:identity:region:name
+    visible: false
+
+  myImageId:
+    type: oci:core:image:id
+    dependsOn:
+      compartmentId: ${targetCompartment}
+
+  myShape:
+    type: oci:core:instanceshape:name
+    dependsOn:
+      compartmentId: ${targetCompartment}
+
+  myCompatibleShape:
+    type: oci:core:instanceshape:name
+    dependsOn:
+      compartmentId: ${targetCompartment}
+      imageId: ${myImageId}
+    visible:
+      or:
+        - ${useExistingVcn}
+        - and:
+          - and:
+            - true
+            - true
+          - not:
+            - false
+
+  myAvailabilityDomain:
     type: oci:identity:availabilitydomain:name
     dependsOn:
-      compartmentId: compartment_id
+      compartmentId: ${targetCompartment}
     visible: complexExpression
+
+  myFaultdomain:
+    type: oci:identity:faultdomain:name
+    dependsOn:
+      compartmentId: ${targetCompartment}
+      availabilityDomainName: ${myAvailabilityDomain}
+
+  dbCompartment:
+    type: oci:identity:compartment:id
+
+  myDbSystem:
+    type: oci:database:dbsystem:id
+    dependsOn:
+      compartmentId: ${dbCompartment}
+
+  myDbHome:
+    type: oci:database:dbhome:id
+    dependsOn:
+      dbSystemId: ${myDbSystem}
+      compartmentId: ${dbCompartment}
+
+  myDbHomeVersion:
+    type: oci:database:dbhome:dbversion
+    dependsOn:
+      dbHomeId: ${myDbHome}
+
+  myDb:
+    type: oci:database:database:id
+    dependsOn:
+      dbHomeId: ${myDbHome}
+      compartmentId: ${dbCompartment}
+
+  myAutonomousDB:
+    type: oci:database:autonomousdatabase:id
+    dependsOn:
+      compartmentId: ${dbCompartment}
+
+# Used to present outputs with more refinement on the Application Information tab.
+# The Application Information tab is only shown if the schema has a "title",
+# "description", and at least one output in this "outputs" section.
+#
+# type:
+#   - boolean
+#   - string
+#   - number
+#   - link - contains url that can be hyperlinked.  If type is not specified and the
+#            value is a proper url, this type is assumed.
+#   - ocid - contains an OCID.  An attempt is made to hyperlink it to the designated
+#            resource in the console.
+#   - csv - synonym for list.  Array of values converted to a comma separated list.
+#   - json - synonym for map.  Map of key / values converted to JSON.
+#   - list - array of values converted to a comma separated list.
+#   - map - map of key / values converted to JSON.
+#
+# displayText: used in links to give text displayed instead of value
+# title: friendly label
+# visible: if false, this ouptut is not shown in the outputs section of Application Information.
+#          It can still be used as the primaryOutputButton.
+outputs:
+  controlCenterUrl:
+    type: link
+    title: Control Center
+    displayText: Control Center
+    visible: false
+
+  schemaRegistryUrl:
+    type: link
+    title: Schema Registry
+    displayText: Schema Registry
+
+  schemaRegistryPublicIps:
+    type: csv
+    title: Public IPs
+
+  schameRegistryLoadBalancer:
+    type: ocid
+    title: Load Balancer
+
+  brokerPublicIps:
+    type: csv
+
+  connectUrl:
+    type: link
+    title: Connect
+    displayText: Connect
+
+  connectPublicIps:
+    type: csv
+    title: Public IPs
+
+  restUrl:
+    type: link
+    title: Rest API
+
+# primaryOutputButton is a reference to a link output that creates a primary button
+# on the Application Information tab.
+# (Optional) if not provided, no primary button is shown.  Also if the output
+# referenced is not a link output, no button is shown.
+primaryOutputButton: ${controlCenterUrl}
+
+# Used to group Outputs.  Any outputs not included in these defined groups, are
+# included in a default group labelled "Outputs".
+# (Optional) if not groups are given, outputs are not grouped at all.
+outputGroups:
+  - title: Schema Registry
+    outputs:
+      - ${schemaRegistryUrl}
+      - ${schemaRegistryPublicIps}
+      - ${schemaRegistryInstances}
+      - ${schemaRegistryLoadBalancer}
+
+  - title: Broker / Connect
+    outputs:
+      - ${brokerPublicIps}
+      - ${brokerInstances}
+      - ${connectUrl}
+      - ${connectPublicIps}
+      - ${restUrl}
+# title: "Basic Lab Environment"
+# description: "Basic Lab Environment using Oracle Cloud Infrastructure"
+# schemaVersion: 1.1.0
+# version: "20190304"
+# locale: "en"
+
+# variableGroups:
+#   - title: "General Configuration"
+#     variables:
+#       - region
+#       - compartment_id
+#       - myAvailabilityDomain
+#   - title: "LAB Configuration"
+#     variables:
+#       - tvd_participants
+
+#   - title: "SSH Key Configuration"
+#     variables:
+#       - ssh_public_key
+
+#   # - title: "Hidden"
+#   #   variables:
+#   #     - 
+
+
+# variables:
+#   # compartmentId dynamic dropdown, targetCompartment present in input variables
+#   compartment_id:
+#     title: "Base Compartment"
+#     description: "Base Compartment to create the resources"
+#     required: true
+#     type: oci:identity:compartment:id      
+  
+#   region:
+#     required: true
+#     type: oci:identity:region:name
+
+#   tvd_participants:
+#     title: "Participants"
+#     description: "Number of participants or environments to be created."
+#     type: integer
+#     required: false
+#     default: 1
+
+#   ssh_public_key:
+#     type: oci:core:ssh:publickey
+#     title: "SSH Public Key"
+#     description: "The public SSH key for the key-pair that you want to use, if you wish to login to the instances over SSH."
+#     additionalProps:
+#       allowMultiple: true
+#     pattern: "((^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)(,((ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)*$"
+
+# myAvailabilityDomain:
+#     type: oci:identity:availabilitydomain:name
+#     dependsOn:
+#       compartmentId: compartment_id
+#     visible: complexExpression
 
 
  
-outputGroups:
-  - title: "Network Information"
-    outputs:
-      - vcn_id
+# outputGroups:
+#   - title: "Network Information"
+#     outputs:
+#       - vcn_id
 
-outputs:
-  vcn_id:
-    title: "VCN IDs"
-    displayText: "VCN Text"
-    type: ocid
-    visible: true   
+# outputs:
+#   vcn_id:
+#     title: "VCN IDs"
+#     displayText: "VCN Text"
+#     type: ocid
+#     visible: true   
 
 
 # variableGroups:
